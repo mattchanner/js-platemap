@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="d3.v3.min.js"></script>
+    <script src="heatmap.js"></script>
+    <style>
+        #log {
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .axis text {
+            font-size: 9px;
+            font-family: sans-serif;
+            fill: silver;
+            stroke-rendering: crispEdges;
+            text-anchor: middle;
+        }
+
+        .ko {
+            stroke-linecap: round;
+            stroke-width: 2;
+            stroke: red;
+        }
+
+        .highlight {
+            stroke: steelblue;
+            stroke-width: 3;
+        }
+
+        .alert-box {
+            position: fixed;
+            width: 250px;
+            right: 40px;
+            background-color: steelblue;
+            color: white;
+            font-family: sans-serif;
+            font-size: 11px;
+            padding: 10px;
+            top: 20px;
+            z-index: 100;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <span id="log">&nbsp;</span>
+    <script>
+
+        function toast (msg) {
+
+            var box = d3.select(document.body)
+                            .append("div")
+                            .attr("class", "alert-box")
+                            .text(msg)
+                            .style("opacity", 0)
+                            .on("click", function () {
+                                box.remove();
+                            });
+
+            box.transition()
+                .duration(1000)
+                .style("opacity", 0.9)
+                .style("left", document.body.offsetWidth / 2 - (200))
+                .each("end", function () {
+                    d3.select(this)
+                        .transition()
+                        .delay(2000) // pause
+                        .duration(2000) // fade out
+                        .style("opacity", 0)
+                        .each("end", function () { 
+                            d3.select(this).remove();
+                        });
+                });
+        }
+
+        window.onload = function () {
+
+            var container = d3.select('body').append("div");
+
+            for (var i = 0; i < 5; i++) {
+
+                var wellData = [],
+                    dimensions = {rows: 16, cols: 24},
+                    size = 30,
+                    padding = 20,
+                    width = size * dimensions.cols
+                    height = size * dimensions.rows;
+
+                for (var y = 0; y < dimensions.rows; y++) {
+                    
+                    var row = [];
+
+                    for (var x = 0; x < dimensions.cols; x++) {
+                        
+                        var ko = Math.random() > 0.99 ? 1 : 0;
+
+                        if (x < 2) {
+                            row.push([Math.random() * 320, ko]);
+                        } else if (x > (dimensions.cols - 2)) {
+                            row.push([Math.random() * 10, ko]);
+                        } else {
+                            row.push([Math.random() * 500, ko]);
+                        }
+                    }
+
+                    wellData.push(row);
+                }
+
+                var cellEnter = function (cell) {
+                    _heatmap.highlight(this);
+                    document.getElementById("log").innerText = 
+                        "Row: " + cell.row + 
+                        ", col: " + cell.col + 
+                        " value = " + cell.value;
+                };
+
+                var cellLeave = function () {
+                    _heatmap.unhighlight(this);
+                };
+
+                var cellClick = function (cell) {
+                    toast("You clicked on row " + (cell.row + 1) + " col " + 
+                        (cell.col + 1) + ", value = " + d3.round(cell.value, 2));
+                }
+
+                var _heatmap = heatmap.view()
+                    .dimensions(dimensions)
+                    .data(wellData)                    
+                    .height((height/1.3) + (padding * 3))
+                    .width((width/1.3) + (padding * 3))
+                    .padding(padding)
+                    .roundwells(true)
+                    .on('cell:click',     cellClick)
+                    .on("cell:mouseover", cellEnter)
+                    .on("cell:mouseout",  cellLeave);
+                
+                container.append("div").style("display", "inline").call(_heatmap.render);
+            }
+        };
+
+    </script>
+</body>
+</html>
