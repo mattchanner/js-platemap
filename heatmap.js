@@ -51,14 +51,14 @@
             }
 
             var updateScales = function () {
-                
+
                 // X and Y linear scales to map domain points to document locations
                 xScale = d3.scale.linear().domain([0, data[0].length-1]).range([padding, width-padding]);
                 yScale = d3.scale.linear().domain([0, data.length-1]).range([padding, height-padding]);
-            
+
                 var lower, upper;
 
-                data.forEach(function (d) {                
+                data.forEach(function (d) {
                     lower = d3.min(d.map(function (x) { return x[0]; }));
                     upper = d3.max(d.map(function (x) { return x[0]; }));
                 });
@@ -76,7 +76,7 @@
                     .data(d3.range(dimensions.cols))
                     .enter()
                         .append("text")
-                        .text(function (d) { 
+                        .text(function (d) {
                             return d + 1;
                         })
                         .attr("x", function (d) {
@@ -90,7 +90,7 @@
                     .data(d3.range(dimensions.rows))
                     .enter()
                         .append("text")
-                        .text(function (d) { 
+                        .text(function (d) {
                             return String.fromCharCode(d + 65);
                         })
                         .attr("x", padding / 1.5)
@@ -115,22 +115,24 @@
 
                 var kos = cellGroup.selectAll(".ko").data(filtered).enter();
                 var koGroup = kos.append("g");
+                var offset = roundwells ? 5 : 2;
+
                 koGroup.append("line")
                     .classed("ko", true)
-                    .attr("x1", function (d, i) { return xScale(d.col) + 4; })
-                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - 4; })
-                    .attr("y1", function (d, i) { return yScale(d.row) + 4; })
-                    .attr("y2", function (d, i) { return yScale(d.row) + cellHeight - 4; })
+                    .attr("x1", function (d, i) { return xScale(d.col) + 5; })
+                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - offset; })
+                    .attr("y1", function (d, i) { return yScale(d.row) + 5; })
+                    .attr("y2", function (d, i) { return yScale(d.row) + cellHeight - offset; })
                     .on("click", function () {
                         dispatcher['cell:click'].apply(this, arguments);
                     });
 
                 koGroup.append("line")
                     .classed("ko", true)
-                    .attr("x1", function (d, i) { return xScale(d.col) + 4; })
-                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - 4; })
-                    .attr("y1", function (d, i) { return yScale(d.row) + cellHeight - 4; })
-                    .attr("y2", function (d, i) { return yScale(d.row) + 4; })
+                    .attr("x1", function (d, i) { return xScale(d.col) + 5; })
+                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - offset; })
+                    .attr("y1", function (d, i) { return yScale(d.row) + cellHeight - offset; })
+                    .attr("y2", function (d, i) { return yScale(d.row) + 5; })
                     .on("click", function () {
                         dispatcher['cell:click'].apply(this, arguments);
                     });
@@ -147,7 +149,7 @@
                         .classed("row", true);
 
                 var rowEntry = row.selectAll(".cell")
-                    .data(function (d, i) { 
+                    .data(function (d, i) {
                         return d.map(function (a, index) {
                             return { value: a[0], ko: a[1], row: i, col: index};
                         });
@@ -168,7 +170,7 @@
                             return yScale(d.row) + (cellHeight / 2);
                         })
                         .attr("r", function () {
-                            return cellWidth / 2; 
+                            return cellWidth / 2;
                         });
                 } else {
                     cell = rowGroups.append("rect")
@@ -182,12 +184,12 @@
                         .attr("width", function () {
                             return cellWidth + 1;
                         })
-                        .attr("height", function () { 
-                            return cellHeight + 1; 
-                        });    
-                }       
+                        .attr("height", function () {
+                            return cellHeight + 1;
+                        });
+                }
 
-                cell.attr("fill", function (d) { 
+                cell.attr("fill", function (d) {
                     return colours(d.value);
                 })
                 .on('click', function () {
@@ -203,7 +205,7 @@
                 drawKnockouts(cellGroup);
             };
 
-            chart.highlight = function (cell) {                
+            chart.highlight = function (cell) {
                 d3.select(cell)
                   .attr("stroke-opacity", 0)
                 .transition()
@@ -211,7 +213,7 @@
                 .duration(1200)
                   .attr("class", "highlight")
                   .attr("stroke-opacity", 1)
-                  .attr("stroke-width", 3);                  
+                  .attr("stroke-width", 3);
                 return chart;
             };
 
@@ -236,7 +238,7 @@
              * @param container The container to append to
              */
             chart.render = function (container) {
-                
+
                 if (container === null)
                     throw new Error("container cannot be null");
 
@@ -247,7 +249,7 @@
                               .attr("class", "heatmap")
                               .append("g");
 
-                updateScales();                
+                updateScales();
                 drawCells(svg);
                 drawAxis(svg);
             };
