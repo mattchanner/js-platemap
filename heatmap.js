@@ -1,4 +1,6 @@
+/*global define: false*/
 (function (root, factory) {
+    "use strict";
 
     // Assumes d3 is available as a module when define is present
     if (typeof define == 'function' && define.amd) {
@@ -9,6 +11,7 @@
     }
 
 } (this, function (heatmap, d3) {
+    "use strict";
 
     /*-------------------------------------------------------
     / heatmap.view
@@ -26,9 +29,7 @@
                 yValue = function (d) { return d[1]; },
                 padding = 20,
                 data = [],
-                size = 10,
                 roundwells = false,
-                heatmap,
                 colours,
                 cellWidth,
                 cellHeight,
@@ -119,20 +120,20 @@
 
                 koGroup.append("line")
                     .classed("ko", true)
-                    .attr("x1", function (d, i) { return xScale(d.col) + 5; })
-                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - offset; })
-                    .attr("y1", function (d, i) { return yScale(d.row) + 5; })
-                    .attr("y2", function (d, i) { return yScale(d.row) + cellHeight - offset; })
+                    .attr("x1", function (d) { return xScale(d.col) + 5; })
+                    .attr("x2", function (d) { return xScale(d.col) + cellWidth - offset; })
+                    .attr("y1", function (d) { return yScale(d.row) + 5; })
+                    .attr("y2", function (d) { return yScale(d.row) + cellHeight - offset; })
                     .on("click", function () {
                         dispatcher['cell:click'].apply(this, arguments);
                     });
 
                 koGroup.append("line")
                     .classed("ko", true)
-                    .attr("x1", function (d, i) { return xScale(d.col) + 5; })
-                    .attr("x2", function (d, i) { return xScale(d.col) + cellWidth - offset; })
-                    .attr("y1", function (d, i) { return yScale(d.row) + cellHeight - offset; })
-                    .attr("y2", function (d, i) { return yScale(d.row) + 5; })
+                    .attr("x1", function (d) { return xScale(d.col) + 5; })
+                    .attr("x2", function (d) { return xScale(d.col) + cellWidth - offset; })
+                    .attr("y1", function (d) { return yScale(d.row) + cellHeight - offset; })
+                    .attr("y2", function (d) { return yScale(d.row) + 5; })
                     .on("click", function () {
                         dispatcher['cell:click'].apply(this, arguments);
                     });
@@ -166,7 +167,7 @@
                         .attr("cx", function (d, i) {
                             return xScale(i) + (cellWidth / 2);
                         })
-                        .attr("cy", function (d, i) {
+                        .attr("cy", function (d) {
                             return yScale(d.row) + (cellHeight / 2);
                         })
                         .attr("r", function () {
@@ -178,7 +179,7 @@
                         .attr("x", function (d, i) {
                             return xScale(i) + 1;
                         })
-                        .attr("y", function (d, i) {
+                        .attr("y", function (d) {
                             return yScale(d.row) + 1;
                         })
                         .attr("width", function () {
